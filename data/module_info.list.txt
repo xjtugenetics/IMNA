@@ -1,0 +1,7 @@
+module	name
+101	Prognostic-wang76-HGNC.list
+102	Prognostic-OncotypeDX-16-HGNC.list
+103	Prognostic-cellcycle114-HGNC.list
+104	Prognostic-Blood15-HGNC.list
+105	Benchmark-PAM50-HGNC.list
+106	Benchmark-MammaPrint-70-uniq.list
