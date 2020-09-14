@@ -87,7 +87,7 @@ Usage:
 inter_score           Interaction score of database (PPI, GIANT)
 modulefile            module file, conducted by 1-Export_module.py
 gene_norm_dg          Normalized gene degree score, conducted by 2-Constract_bipartite.py
-mod					  P-value or Odd ratio
+mod          P or OD      	  
 oup                   Prefix of output file
 </pre>
 
@@ -109,7 +109,7 @@ Usage:
 ##### Details for parameters:
 <pre>
 PPI_SScore            Gene signiture score of PPI network (step 3 output)
-GIANT_SScore          Gene signiture score of GIANT network (step 3 output)
+GIANT_SScore          Gene signiture score of GIANT network (step 4 output)
 oup                   Prefix of output file
 </pre>
 
@@ -133,8 +133,8 @@ Usage:
 <pre>
 inpfile           	  File before conversion
 oup          		  Output file name
-column                The number of target column
-gene id type          SYMBOL or ENTREZID
+column           	  The number of target column
+gene id typeS           	  YMBOL or ENTREZID
 </pre>
 
 ##### Output file(s):
