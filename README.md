@@ -134,7 +134,7 @@ Usage:
 inpfile           	  File before conversion
 oup          		  Output file name
 column           	  The number of target column
-gene id typeS         SYMBOL or ENTREZID
+gene id          		  type SYMBOL or ENTREZID
 </pre>
 
 ##### Output file(s):
