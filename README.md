@@ -134,7 +134,7 @@ Usage:
 inpfile           	  File before conversion
 oup          		  Output file name
 column           	  The number of target column
-gene id           	  type SYMBOL or ENTREZID
+gene id           	  SYMBOL or ENTREZID
 </pre>
 
 ##### Output file(s):
@@ -339,7 +339,7 @@ gene id           	  type SYMBOL or ENTREZID
 ```sh
 ###(optional) 
 
-		convert_geneid.r result_Composite_score.txt result_Composite_score.txt.corv 1 ENTREZID 
+		Rscript convert_geneid.r result_Composite_score.txt result_Composite_score.txt.corv 1 ENTREZID 
 
 		## "result_Composite_score.txt.corv"
 				SYMBOL	norm_x	norm_y	mean	compscore
