@@ -29,6 +29,9 @@ mod=sys.argv[4]  ### P/OD
 oupfile=sys.argv[5]  ### onput file name
 
 
+print('input: '+inpfile+'\t'+modulefile+'\t'+bipfile+'\n')
+print('output: '+oupfile+'\n')
+
 ######## Define function
 def NetConstructWDG(file1):
 	DGP = nx.DiGraph()
@@ -60,104 +63,99 @@ Ng=set(mre.gene.astype('str'))
 N=len(Ng)
 
 if mod=='P':
-
-genetotal=[]
-pvaltotal=[]	
-genesettotal=[]
-
-
-genesets=[ list(L2[L2.module==i].gene.astype('str')) for i in ml]   
-
-num=1
-for gn in genesets:  
-	g=set(gn).intersection(Ng)     
-	M=len(g)                  
-	for i in nl:	    
-		nei=list(GP.neighbors(i))   
-		neiF=set(nei).intersection(Ng)    
-		n=len(neiF)     
-		k=len(set(neiF).intersection(g))  
-		pval = fisher_exact([[M-k,k],[N-M-n+k,n-k]])[1]   
-		genetotal.append(i)
-		pvaltotal.append(pval)
-		genesettotal.append(num)
-	num=num+1
-	print('1 finish')
+	print('mode: P-value')
+	genetotal=[]
+	pvaltotal=[]	
+	genesettotal=[]
 
 
-dfkda=pd.DataFrame({'gene':genetotal,'geneset':genesettotal,'pval':pvaltotal})
+	genesets=[ list(L2[L2.module==i].gene.astype('str')) for i in ml]   
+
+	num=1
+	for gn in genesets:  
+		g=set(gn).intersection(Ng)     
+		M=len(g)                  
+		for i in nl:	    
+			nei=list(GP.neighbors(i))   
+			neiF=set(nei).intersection(Ng)    
+			n=len(neiF)     
+			k=len(set(neiF).intersection(g))  
+			pval = fisher_exact([[M-k,k],[N-M-n+k,n-k]])[1]   
+			genetotal.append(i)
+			pvaltotal.append(pval)
+			genesettotal.append(num)
+		num=num+1
+		print('1 finish')
 
 
-###### Normalized score
-gs=list(set(dfkda.geneset))
-ResTotal=pd.DataFrame()
-for i in gs:
-	modres=dfkda[dfkda.geneset==i]
-	modres['score']=-(modres['pval'].apply(np.log10))
-	from sklearn.preprocessing import MinMaxScaler
-	scaler = MinMaxScaler() 
-	rownum='norm'+str(i)
-	modres['norm'+str(i)]=scaler.fit_transform(modres['score'])
-	if ResTotal.empty:
-		ResTotal=modres.loc[:, ['gene', rownum]]
-	else:
-		ResTotal=pd.merge(ResTotal,modres.loc[:, ['gene', rownum]],on='gene')
+	dfkda=pd.DataFrame({'gene':genetotal,'geneset':genesettotal,'pval':pvaltotal})
+
+
+	###### Normalized score
+	gs=list(set(dfkda.geneset))
+	ResTotal=pd.DataFrame()
+	for i in gs:
+		modres=dfkda[dfkda.geneset==i]
+		modres['score']=-(modres['pval'].apply(np.log10))
+		from sklearn.preprocessing import MinMaxScaler
+		scaler = MinMaxScaler() 
+		rownum='norm'+str(i)
+		modres['norm'+str(i)]=scaler.fit_transform(modres['score'])
+		if ResTotal.empty:
+			ResTotal=modres.loc[:, ['gene', rownum]]
+		else:
+			ResTotal=pd.merge(ResTotal,modres.loc[:, ['gene', rownum]],on='gene')
 
 
 elif mod=='OD':
-
-genetotal=[]
-odtotal=[]	
-genesettotal=[]
-
-
-genesets=[ list(L2[L2.module==i].gene.astype('str')) for i in ml]   
-
-num=1
-for gn in genesets:  
-	g=set(gn).intersection(Ng)     
-	M=len(g)                  
-	for i in nl:	    
-		nei=list(GP.neighbors(i))   
-		neiF=set(nei).intersection(Ng)    
-		n=len(neiF)     
-		k=len(set(neiF).intersection(g))  
-		od, pval = fisher_exact([[M-k,k],[N-M-n+k,n-k]])
-		genetotal.append(i)
-		odtotal.append(od)
-		genesettotal.append(num)
-	num=num+1
-	print('1 finish')
+	print('mode: odd ratio')
+	genetotal=[]
+	odtotal=[]	
+	genesettotal=[]
 
 
-dfkda=pd.DataFrame({'gene':genetotal,'geneset':genesettotal,'pval':pvaltotal})
-dfkda = dfkda.replace([np.inf, -np.inf], np.nan)
-dfkda = dfkda.replace(np.nan, 0)
+	genesets=[ list(L2[L2.module==i].gene.astype('str')) for i in ml]   
 
-###### Normalized score
-gs=list(set(dfkda.geneset))
-ResTotal=pd.DataFrame()
-for i in gs:
-	modres=dfkda[dfkda.geneset==i]
-	modres['score']=modres['od']
-	from sklearn.preprocessing import MinMaxScaler
-	scaler = MinMaxScaler() 
-	rownum='norm'+str(i)
-	modres['norm'+str(i)]=scaler.fit_transform(modres['score'])
-	if ResTotal.empty:
-		ResTotal=modres.loc[:, ['gene', rownum]]
-	else:
-		ResTotal=pd.merge(ResTotal,modres.loc[:, ['gene', rownum]],on='gene')
+	num=1
+	for gn in genesets:  
+		g=set(gn).intersection(Ng)     
+		M=len(g)                  
+		for i in nl:	    
+			nei=list(GP.neighbors(i))   
+			neiF=set(nei).intersection(Ng)    
+			n=len(neiF)     
+			k=len(set(neiF).intersection(g))  
+			od, pval = fisher_exact([[M-k,k],[N-M-n+k,n-k]])
+			genetotal.append(i)
+			odtotal.append(od)
+			genesettotal.append(num)
+		num=num+1
+		print('1 finish')
 
 
-break
+	dfkda=pd.DataFrame({'gene':genetotal,'geneset':genesettotal,'od':odtotal})
+	dfkda = dfkda.replace([np.inf, -np.inf], np.nan)
+	dfkda = dfkda.replace(np.nan, 0)
+
+	###### Normalized score
+	gs=list(set(dfkda.geneset))
+	ResTotal=pd.DataFrame()
+	for i in gs:
+		modres=dfkda[dfkda.geneset==i]
+		modres['score']=modres['od']
+		from sklearn.preprocessing import MinMaxScaler
+		scaler = MinMaxScaler() 
+		rownum='norm'+str(i)
+		modres['norm'+str(i)]=scaler.fit_transform(modres['score'])
+		if ResTotal.empty:
+			ResTotal=modres.loc[:, ['gene', rownum]]
+		else:
+			ResTotal=pd.merge(ResTotal,modres.loc[:, ['gene', rownum]],on='gene')
+
+
 ######
 
 		
-testscore=	ResTotal.mean(1)
-ResTotal['EScore']=ResTotal.mean(1)
-ResTotal=ResTotal.sort(["EScore"],ascending=False)
-ResTotal['normEScore']=scaler.fit_transform(ResTotal['EScore'])
 ResTotal.to_csv(oupfile+"-KDA-EScore.txt",index=False,sep='\t' )
 
 
@@ -165,16 +163,17 @@ ResTotal.to_csv(oupfile+"-KDA-EScore.txt",index=False,sep='\t' )
 #####   SScore
 ngenesets=len(genesets)
 resori=ResTotal
-print(resori)
+#print(resori)
 dg=pd.read_table(bipfile,sep='\t',header=0) 
 dg.rename(columns={"node":"gene"},inplace=True)
+dg['gene'] = dg.gene.astype('str')
 #dg['DG']=dg['norm']+1
 resweight=pd.merge(resori,dg,how = 'left',on='gene')
 resweight=	resweight.fillna(1)
 
 
-print(len(resweight.columns))
-print(resweight[list(range(1,ngenesets+1))])
+#print(len(resweight.columns))
+#print(resweight[list(range(1,ngenesets+1))])
 
 resweight_col = [column for column in resweight[list(range(1,ngenesets+1))]]
 resweight_filt = resweight[resweight_col].multiply(resweight['norm'], axis="index")
